@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mat & Måltider – Intensivträning (SRS)</title>
+  <title>Mat & Måltider – Komplett Quiz (SRS) + Foton (varierade)</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f8fafc; color: #0f172a; margin:0; padding:0; }
-    .wrap { max-width: 900px; margin: 0 auto; padding: 20px; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 20px; }
     header { display:flex; justify-content: space-between; flex-wrap: wrap; align-items:center; gap:10px; }
     h1 { font-size: 1.5rem; margin:0; }
     .muted { font-size: 0.9rem; color:#64748b; }
     .card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; margin-top:16px; }
     .card-content { padding:20px; }
-    .q { font-size:1.3rem; text-align:center; min-height:100px; display:flex; align-items:center; justify-content:center; }
+    .qrow { display:flex; align-items:center; justify-content:center; gap:12px; min-height:120px; }
+    .q { font-size:1.2rem; text-align:center; }
     .controls { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:14px; }
     button { border:none; border-radius:8px; padding:10px 14px; font-weight:bold; cursor:pointer; transition: transform 0.1s ease-in-out; }
     button:hover { transform: scale(1.05); }
@@ -29,13 +30,18 @@
     .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
     .helpbox { margin-top:10px; font-size:0.9rem; color:#334155; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:8px; padding:10px 12px; }
     .helpbox b { color:#111827; }
+    .photo { width:72px; height:72px; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0; box-shadow: 0 1px 1px rgba(0,0,0,0.06); }
+    details { margin-top: 22px; }
+    details summary { cursor: pointer; }
+    .credits { font-size: 0.8rem; color:#64748b; }
+    .credits a { color:#2563eb; text-decoration: none; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <div>
-        <h1>Mat & Måltider – Intensivträning (SRS)</h1>
+        <h1>Mat & Måltider – Komplett Quiz (SRS)</h1>
         <div class="muted">Inför prov: Again 10 min · Hard 30 min · Good 1–6h · Easy 2–12h</div>
       </div>
       <div class="row">
@@ -56,6 +62,25 @@
 
     <div id="main"></div>
 
+    <details>
+      <summary>📸 Bildkällor (Public Domain/CC0)</summary>
+      <div class="credits">
+        • MyPlate (USDA, PD): <a href="https://commons.wikimedia.org/wiki/File:USDA_MyPlate_green.svg" target="_blank">USDA_MyPlate_green.svg</a><br>
+        • Breakfast (USDA): <a href="https://commons.wikimedia.org/wiki/File:Breakfast_meal_-_MyPlate_20210810-FNS-UNC-0018.jpg" target="_blank">Breakfast meal – MyPlate</a><br>
+        • Measuring spoons (CC0): <a href="https://commons.wikimedia.org/wiki/File:Mongolian_Traditional_Culture_Measuring_Spoons_(35320951170).jpg" target="_blank">Measuring spoons</a><br>
+        • Olive oil (PD/CC0): <a href="https://commons.wikimedia.org/wiki/File:Bottle_of_olive_oil.jpg" target="_blank">Bottle of olive oil</a><br>
+        • Bread & grains (PD): <a href="https://commons.wikimedia.org/wiki/File:Bread_and_grains.jpg" target="_blank">Bread and grains</a><br>
+        • Pasta (PD): <a href="https://commons.wikimedia.org/wiki/File:Cooked_pasta_noodles.jpg" target="_blank">Cooked pasta noodles</a><br>
+        • Potatoes (PD): <a href="https://commons.wikimedia.org/wiki/File:Russet_potatoes.jpg" target="_blank">Russet potatoes</a><br>
+        • Salmon (CC0): <a href="https://commons.wikimedia.org/wiki/File:Grilled_plated_salmon_fillet_(cropped).jpg" target="_blank">Grilled plated salmon fillet (cropped)</a><br>
+        • Eggs (PD): <a href="https://commons.wikimedia.org/wiki/File:Chicken_eggs.jpg" target="_blank">Chicken eggs</a><br>
+        • Beans/legumes (PD): <a href="https://commons.wikimedia.org/wiki/File:Legumes.jpg" target="_blank">Legumes</a><br>
+        • Fruit & veg (PD, NCI/NIH): <a href="https://commons.wikimedia.org/wiki/File:Good_Food_In_Dishes_-_NCI_Visuals_Online.jpg" target="_blank">Good Food In Dishes</a><br>
+        • Leafy greens (PD): <a href="https://commons.wikimedia.org/wiki/File:Kale-Bundle.jpg" target="_blank">Kale bundle</a><br>
+        • Glass of water (PD): <a href="https://commons.wikimedia.org/wiki/File:Glass-of-water.jpg" target="_blank">Glass of water</a><br>
+      </div>
+    </details>
+
     <div class="footer">
       Tangenter: Mellanslag = vänd · 1–4 = Again/Hard/Good/Easy · Framsteg sparas på den här datorn. <br/>
       <button class="btn reset" onclick="resetAll()">🔄 Börja om</button>
@@ -63,34 +88,117 @@
   </div>
 
 <script>
-const QA = [
-  {q:"Beskriv en bra frukost och förklara varför.",a:"T.ex. yoghurt med müsli och frukt eller grovt bröd med pålägg. Innehåller kolhydrater (energi), protein (bygger kroppen) och vitaminer/mineraler."},
-  {q:"Varför är det viktigt att äta regelbundet?",a:"Ger jämn energi, bättre koncentration och minskar risken att småäta onyttigt."},
-  {q:"Vilka tre delar består tallriksmodellen av?",a:"Kolhydrater, grönsaker/frukt och protein."},
-  {q:"Vad ger kolhydrater kroppen?",a:"Energi."},
-  {q:"Vad har protein för funktion i kroppen?",a:"Bygger upp och reparerar kroppen."},
-  {q:"Varför behöver vi fett?",a:"Ger energi, bygger celler, skyddar organ."},
-  {q:"Vad gör vitaminer och mineraler i kroppen?",a:"Stärker immunförsvaret, behövs för blod, skelett och andra funktioner."},
-  {q:"Vad gör fibrer?",a:"Bra för magen, håller blodsockret jämnt."},
-  {q:"Vad är skillnaden på mättat och omättat fett?",a:"Mättat fett (smör, bacon, ost) är mindre nyttigt, omättat fett (olja, avokado, fisk, nötter) är bra för hjärtat."},
-  {q:"Vad hjälper matcirkeln oss med?",a:"Att planera måltider och få i oss alla näringsämnen."},
-  {q:"Ge exempel på snabba kolhydrater.",a:"Vitt bröd, godis, läsk."},
-  {q:"Ge exempel på långsamma kolhydrater.",a:"Grovt bröd, fullkornspasta, baljväxter."},
-  {q:"Varför är det bättre att äta mer från växtriket än djurriket?",a:"Växtriket (bönor, linser) är nyttigt och klimatsmart, djurriket (kött, ost) har ofta mer mättat fett och större klimatpåverkan."},
-  {q:"Varför är det bra att äta närodlade och säsongsanpassade råvaror?",a:"Mindre transporter, bättre för miljön, billigare, färskare och godare."},
-  {q:"Nämn 5 klimatsmarta mattips.",a:"Ät mer vegetariskt, välj säsongsanpassat, välj närodlat, ta hand om rester, drick vatten istället för läsk."},
-  {q:"Vilka är bra måltidsvanor?",a:"Ät frukost, lunch, middag och mellanmål, drick vatten, ät varierat och lagom stora portioner, ha trevliga måltider."},
-  {q:"Varför är bra mat viktigt för hälsan?",a:"Ger energi, koncentration, ork och minskar risken för sjukdomar."}
-].map((x,i)=>({...x,id:"q"+(i+1)}));
+// Bildpooler (Wikimedia Commons Special:FilePath)
+const POOL = {
+  myplate: [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/USDA_MyPlate_green.svg"
+  ],
+  breakfast: [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Breakfast_meal_-_MyPlate_20210810-FNS-UNC-0018.jpg"
+  ],
+  measure: [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Mongolian_Traditional_Culture_Measuring_Spoons_%2835320951170%29.jpg"
+  ],
+  fats: [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Bottle_of_olive_oil.jpg"
+  ],
+  carbs: [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Bread_and_grains.jpg",
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Cooked_pasta_noodles.jpg",
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Russet_potatoes.jpg"
+  ],
+  protein: [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Grilled_plated_salmon_fillet_%28cropped%29.jpg",
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Chicken_eggs.jpg",
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Legumes.jpg"
+  ],
+  vegfruit: [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Good_Food_In_Dishes_-_NCI_Visuals_Online.jpg",
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Kale-Bundle.jpg"
+  ],
+  water: [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Glass-of-water.jpg"
+  ]
+};
 
-const STORAGE="hemkunskap-srs-single";
+function topicFor(text){
+  const t=(text||"").toLowerCase();
+  if(t.includes("tallriksmodellen")) return "myplate";
+  if(t.includes("frukost") || t.includes("mellanmål")) return "breakfast";
+  if(t.includes("mått") || t.includes("dl") || t.includes("msk") || t.includes("tsk") || t.includes("krm") || t.includes("liter")) return "measure";
+  if(t.includes("fett") || t.includes("omega") || t.includes("olja")) return "fats";
+  if(t.includes("kolhydrat") || t.includes("bröd") || t.includes("pasta") || t.includes("potatis") || t.includes("fullkorn")) return "carbs";
+  if(t.includes("protein") || t.includes("fisk") || t.includes("ägg") || t.includes("bön") || t.includes("linser")) return "protein";
+  if(t.includes("vitamin") || t.includes("grönsak") || t.includes("frukt") || t.includes("fiber") || t.includes("matcirkeln") || t.includes("klimatsmart") || t.includes("säsong") || t.includes("närodlat")) return "vegfruit";
+  if(t.includes("vatten") || t.includes("dryck") || t.includes("glas")) return "water";
+  return "vegfruit";
+}
+
+// Deterministiskt val: välj index baserat på ID-siffra
+function pickPhoto(topic, id){
+  const pool = POOL[topic] || POOL.vegfruit;
+  const num = parseInt((id||"").replace(/\D/g,'')) || 0;
+  const idx = pool.length ? num % pool.length : 0;
+  return pool[idx];
+}
+
+// Frågor/Svar
+const QA = [
+  {q:"Beskriv en bra frukost och förklara hur du tänkt.",a:"Ex: gröt + mjölk + macka med ägg, eller yoghurt + granola + bär. Ger kolhydrater (energi), protein/kalcium och vitaminer/fibrer."},
+  {q:"Varför är det viktigt att äta regelbundet?",a:"Ger jämn energi och bättre koncentration samt minskar sötsug/småätande."},
+  {q:"Förklara vilken mat de olika delarna i tallriksmodellen ska bestå av.",a:"Kolhydrater: potatis/ris/pasta/bröd. Protein: fisk/kött/ägg/linser/bönor. Grönsaker/rotfrukter: vitaminer och fibrer."},
+  {q:"Vilka näringsämnen hittar vi i de tre delarna och deras funktion?",a:"Kolhydrater (energi), Protein (bygger/reparerar muskler/vävnader), Vitaminer/fibrer från grönsaker (hälsa/tarmar)."},
+  {q:"Vad är skillnaden på mättat och omättat fett?",a:"Omättat är nyttigare (rapsolja/olivolja/avokado/nötter/fisk). Mättat bör begränsas (smör/grädde/korv/bacon/bakverk)."},
+  {q:"Ge exempel på mat med mättat fett.",a:"Smör, grädde, rött kött, korv, bacon, bakverk."},
+  {q:"Ge exempel på mat med omättat fett.",a:"Rapsolja, olivolja, avokado, nötter/mandel, fet fisk som lax/sill."},
+  {q:"Vilken hjälp har vi av matcirkeln när vi planerar måltider?",a:"Den visar sju grupper så vi får variation – vi bör äta något från varje grupp varje dag/vid varje måltid."},
+  {q:"Berätta om långsamma och snabba kolhydrater.",a:"Långsamma (fullkorn/rotfrukter) ger jämn energi och mättnad. Snabba (vitt bröd/godis/läsk) ger snabb höjning och kort mättnad."},
+  {q:"Varför är det bättre att äta mer mat från växtriket än djurriket?",a:"Klimatsmartare och ofta billigare; mycket fiber och nyttiga fetter. Minska mättat fett och klimatpåverkan."},
+  {q:"Varför är närodlade säsongsfrukter och -grönsaker bra?",a:"Mindre transporter, mer smak/näring när de mognat i säsong och ofta billigare."},
+  {q:"Ge fem klimatsmarta mattips.",a:"1) Ät mindre kött, 2) Ät mer baljväxter, 3) Ät närodlat i säsong, 4) Ta hand om rester – släng inte, 5) Välj Nyckelhålet/eko när möjligt."},
+  {q:"Vilka sju grupper ingår i matcirkeln?",a:"Frukt & bär; Grönsaker; Potatis & rotfrukter; Bröd/ris/pasta/gryn; Matfett; Mejeri; Kött/fisk/ägg & baljväxter."},
+  {q:"Hur används matcirkeln i praktiken?",a:"Ät något från varje grupp varje dag och helst vid varje måltid för variation."},
+  {q:"Vad visar tallriksmodellen för lunch/middag?",a:"Balans mellan: Kolhydrater (potatis/ris/pasta/bröd) + Protein (fisk/kött/linser/ägg) + Grönsaker (vitaminer/fibrer)."},
+  {q:"Vilka är de tre energigivande näringsämnena?",a:"Protein, Fett och Kolhydrater."},
+  {q:"Var finns protein och vad gör det?",a:"Bönor/linser/ägg/mjölk/kött/fisk. Bygger kroppens muskler, senor, hud och celler."},
+  {q:"Varför rekommenderas mer växtprotein?",a:"Bättre för miljön och ofta billigare; ger fiber och näring."},
+  {q:"Vad gör fett i kroppen?",a:"Ger energi, skyddar organ, håller oss varma och hjälper upptag av A, D, E, K."},
+  {q:"Exempel på omättat respektive mättat fett.",a:"Omättat: raps-/olivolja, avokado, nötter, fisk. Mättat: smör, grädde, rött kött, korv, bacon, bakverk."},
+  {q:"Var finns kolhydrater och vilka tre typer finns?",a:"Pasta/ris/bröd/potatis. Typer: stärkelse, fibrer, sockerarter."},
+  {q:"Varför välja potatis/matvete istället för ris ibland?",a:"Närodlat kan ge lägre klimatpåverkan och är ofta billigare."},
+  {q:"Ge exempel på långsamma kolhydrater (från dokumentet).",a:"Fullkornsbröd, hela korn och frön, fullkornspasta, rotfrukter."},
+  {q:"Ge exempel på snabba kolhydrater (från dokumentet).",a:"Vitt bröd, bullar, kakor, processad snabbmat, godis och socker."},
+  {q:"Vad får vi från grönsaker och rotfrukter?",a:"Vitaminer och kostfibrer – håller oss friska/pigga och motverkar förstoppning."},
+  {q:"Varför säsongsvälja kål/rotfrukter vinter och gurka/jordgubbar sommar?",a:"Säsong ger mer smak, näring, lägre energiåtgång och ofta lägre pris."},
+  {q:"Vad betyder Nyckelhålet och var kan du hitta det?",a:"Mindre socker/salt, mer fullkorn/fiber och nyttigare fett. Finns på grönsaker, oljor, mejeri, bröd, flingor och fisk."},
+  {q:"Nämn sex klimatsmarta mattips från materialet.",a:"1) Ät mindre kött, 2) Släng inte mat, 3) Ät mer frukt/grönt (närodlat/säsong eller fryst), 4) Ät mer baljväxter, 5) Minska onödig mat, 6) Välj ekologiskt när möjligt."},
+  {q:"Vad ska du komma ihåg om dina matval?",a:"Regelbundet, varierat och balanserat – tänk även klimat och ekonomi. Lördagsgodis/kött ibland är okej; släng inte mat."},
+  {q:"Hur mycket rymmer 1 dl, 1 msk, 1 tsk, 1 krm?",a:"1 dl = 100 ml, 1 msk = 15 ml, 1 tsk = 5 ml, 1 krm = 1 ml."},
+  {q:"Hur många deciliter går det på en liter?",a:"10 dl."},
+  {q:"Hur många teskedar går det på en matsked?",a:"3 tsk per msk."},
+  {q:"Hur många kryddmått går det på en tesked?",a:"5 krm per tsk."},
+  {q:"Hur många matskedar får plats i en deciliter?",a:"Cirka 6,7 msk."},
+  {q:"Ungefär hur mycket vatten i ett vanligt dricksglas?",a:"Cirka 2 dl."},
+  {q:"Varför använda riktiga mått och inte bestickmått?",a:"Exakta mängder – bestick varierar i storlek beroende på modell/design."},
+  {q:"Ge tre exempel på bra frukostar från materialet.",a:"1) Gröt + rivet äpple + mjölk + macka med ägg. 2) Smoothie + knäckemacka med ost/paprika. 3) Yoghurt + granola + bär."},
+  {q:"Vilka delar bidrar frukosten med enligt materialet?",a:"Bröd/gröt: kolhydrater; mjölk/yoghurt: protein och kalcium; frukt/bär/grönt: vitaminer och fibrer. Tips: lägg till ett ägg."},
+];
+
+// ====== SRS och lagring ======
+const STORAGE="hemkunskap-srs-KOMPLETT-FOTO-VAR";
 const now=()=>Date.now();
 function defState(id){return {id,reps:0,due:now(),lapses:0};}
-let deck=QA.map(q=>({...q,state:defState(q.id)}));
+let deck=QA.map((q,i)=>{
+  const id="q"+(i+1);
+  const topic=topicFor(q.q);
+  const photo=pickPhoto(topic,id);
+  return {id, q:q.q, a:q.a, topic, photo, state:defState(id)};
+});
 const saved=localStorage.getItem(STORAGE);
 if(saved){try{const p=JSON.parse(saved);const map=new Map(p.map(x=>[x.id,x]));deck=deck.map(b=>map.get(b.id)||b);}catch{}}
 function save(){localStorage.setItem(STORAGE,JSON.stringify(deck));}
 
+// Export/Import
 function exportProgress(){
   const blob=new Blob([JSON.stringify(deck)],{type:"application/json"});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download="progress.json";a.click();
@@ -99,10 +207,18 @@ document.getElementById('importFile').addEventListener('change',(e)=>{
   const f=e.target.files[0]; if(!f) return;
   const r=new FileReader();
   r.onload=()=>{try{const data=JSON.parse(r.result); if(!Array.isArray(data)) throw new Error("Fel format");
-    deck=QA.map(q=>{const f=data.find(x=>x.id===q.id); return f?f:({...q,state:defState(q.id)});}); save(); render(); alert("Import klar."); }catch(err){alert("Import misslyckades: "+err.message);} };
+    deck=QA.map((q,i)=>{
+      const id="q"+(i+1);
+      const found=data.find(x=>x.id===id);
+      if(found) return found;
+      const topic=topicFor(q.q);
+      const photo=pickPhoto(topic,id);
+      return {id, q:q.q, a:q.a, topic, photo, state:defState(id)};
+    }); save(); render(); alert("Import klar."); }catch(err){alert("Import misslyckades: "+err.message);} };
   r.readAsText(f);
 });
 
+// SRS
 let examMode=true; document.getElementById('examToggle').onchange=(e)=>{examMode=e.target.checked; render();};
 function gradeCard(s,g,exam){
   s={...s}; const m=(min)=>min*60000,h=(hr)=>hr*3600000;
@@ -117,7 +233,7 @@ function gradeCard(s,g,exam){
   }
   return s;
 }
-function pool(){return deck.filter(d=>d.state.due<=now()).concat(deck.filter(d=>d.state.reps===0).slice(0,10));}
+function pool(){return deck.filter(d=>d.state.due<=now()).concat(deck.filter(d=>d.state.reps===0).slice(0,14));}
 function stats(){
   const poolNow=pool();
   document.getElementById('bar').style.width=(100*(deck.length-poolNow.length)/deck.length)+'%';
@@ -125,7 +241,7 @@ function stats(){
 }
 function renderEmpty(){
   const el=document.getElementById('main');
-  el.innerHTML='<div class="card"><div class="card-content center"><h3>Inga fler kort 🎉</h3><p class="muted">Bra jobbat!</p><div class="controls"><button class="btn" onclick="location.reload()">Uppdatera</button><button class="btn reset" onclick="resetAll()">🔄 Börja om</button></div><div class="helpbox"><b>Vad betyder knapparna?</b><br>Again = repetera om 10 min • Hard = 30 min • Good = 1–6 h • Easy = 2–12 h</div></div></div>';
+  el.innerHTML='<div class="card"><div class="card-content center"><h3>Inga fler kort 🎉</h3><p class="muted">Bra jobbat!</p><div class="controls"><button class="btn" onclick="location.reload()">Uppdatera</button><button class="btn reset" onclick="resetAll()">🔄 Börja om</button></div><div class="helpbox"><b>Vad betyder knapparna?</b><br>Again = 10 min • Hard = 30 min • Good = 1–6 h • Easy = 2–12 h</div></div></div>';
 }
 function render(){
   stats(); const c=pool()[0]; const el=document.getElementById('main');
@@ -135,7 +251,10 @@ function render(){
       <span class="badge">Förfaller: ${Math.max(0, Math.round((c.state.due-now())/60000))} min</span>
       <span class="muted">Rep ${c.state.reps} · Lapses ${c.state.lapses}</span>
     </div>
-    <div class="q" id="qa">${c.q}</div>
+    <div class="qrow">
+      <img src="${c.photo}" alt="Illustrationsfoto" class="photo" referrerpolicy="no-referrer">
+      <div class="q" id="qa">${c.q}</div>
+    </div>
     <div class="controls"><button class="btn outline" onclick="flip()">Vänd</button></div>
     <div class="controls">
       <button class="btn bad" onclick="grade(1)">1 Again</button>
@@ -155,7 +274,8 @@ function render(){
 function flip(){ const c=deck.find(x=>x.id===window._cid); if(!c)return;
   const el=document.getElementById('qa'); if(window._showA){el.textContent=c.q;window._showA=false;} else {el.textContent=c.a;window._showA=true;} }
 function grade(g){ const i=deck.findIndex(x=>x.id===window._cid); if(i<0)return; deck[i]={...deck[i],state:gradeCard(deck[i].state,g,examMode)}; save(); render(); }
-function resetAll(){ if(confirm('Nollställ allt?')){ deck=QA.map(q=>({...q,state:defState(q.id)})); save(); render(); } }
+function resetAll(){ if(confirm('Nollställ allt?')){ deck=QA.map((q,i)=>{ const id="q"+(i+1); const topic=topicFor(q.q); const photo=pickPhoto(topic,id); return {id, q:q.q, a:q.a, topic, photo, state:defState(id)}; }); save(); render(); } }
+
 window.onkeydown=(e)=>{ if(e.code==='Space'){e.preventDefault();flip();} if(e.key==='1')grade(1); if(e.key==='2')grade(2); if(e.key==='3')grade(3); if(e.key==='4')grade(4); };
 render();
 </script>
