@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mat & Måltider – Intensivträning (SRS) – Multiuser</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8fafc; color: #0f172a; margin:0; padding:0; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 20px; }
+    header { display:flex; justify-content: space-between; flex-wrap: wrap; align-items:center; gap:10px; }
+    h1 { font-size: 1.5rem; margin:0; }
+    .muted { font-size: 0.9rem; color:#64748b; }
+    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    select, input[type=text] { padding: 8px 10px; border:1px solid #cbd5e1; border-radius:8px; }
+    .card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; margin-top:16px; }
+    .card-content { padding:20px; }
+    .q { font-size:1.25rem; text-align:center; min-height:100px; display:flex; align-items:center; justify-content:center; }
+    .controls { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:14px; }
+    button { border:none; border-radius:8px; padding:10px 14px; font-weight:bold; cursor:pointer; transition: transform 0.1s ease-in-out; }
+    button:hover { transform: scale(1.05); }
+    .btn { background:#2563eb; color:white; }
+    .btn.outline { background:transparent; border:1px solid #2563eb; color:#2563eb; }
+    .btn.ok { background:#16a34a; color:white; }
+    .btn.bad { background:#ef4444; color:white; }
+    .btn.reset { background:#facc15; color:#78350f; border:2px solid #ca8a04; }
+    .progress { height:10px; border-radius:999px; background:#e5e7eb; overflow:hidden; }
+    .bar { height:100%; width:0; background:#2563eb; transition:width 0.3s; }
+    .stat { font-size:0.8rem; color:#64748b; margin-top:4px; }
+    .badge { font-size:0.75rem; padding:2px 8px; border:1px solid #e2e8f0; border-radius:999px; color:#64748b; }
+    .footer { text-align:center; font-size:0.8rem; color:#64748b; margin-top:20px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Mat & Måltider – Intensivträning (SRS)</h1>
+        <div class="muted">Inför prov: Again 10 min · Hard 30 min · Good 1–6h · Easy 2–12h</div>
+      </div>
+      <div class="row">
+        <label>Profil: 
+          <select id="profileSelect"></select>
+        </label>
+        <input id="newProfileName" type="text" placeholder="Lägg till profil (t.ex. Emma)"/>
+        <button class="btn outline" onclick="addProfile()">➕ Lägg till</button>
+        <label style="margin-left:8px;"><input type="checkbox" id="examToggle" checked> Inför prov</label>
+      </div>
+    </header>
+
+    <div class="card"><div class="card-content">
+      <div class="progress"><div id="bar" class="bar"></div></div>
+      <div id="stats" class="stat">Laddar…</div>
+      <div class="controls" style="margin-top:10px;">
+        <button class="btn reset" onclick="resetAll()">🔄 Börja om (profil)</button>
+        <button class="btn outline" onclick="exportProgress()">⬇️ Exportera</button>
+        <input type="file" id="importFile" accept="application/json" style="display:none;" />
+        <button class="btn outline" onclick="document.getElementById('importFile').click()">⬆️ Importera</button>
+      </div>
+    </div></div>
+
+    <div id="main"></div>
+
+    <div class="footer">
+      Tangenter: Mellanslag = vänd · 1–4 = Again/Hard/Good/Easy · Sparas per profil i denna webbläsare. <br/>
+      <button class="btn reset" onclick="resetAll()">🔄 Börja om (profil)</button>
+    </div>
+  </div>
+
+<script>
+// ====== Frågor/svar ======
+const QA = [
+  {q:"Beskriv en bra frukost och förklara varför.",a:"T.ex. yoghurt med müsli och frukt eller grovt bröd med pålägg. Innehåller kolhydrater (energi), protein (bygger kroppen) och vitaminer/mineraler."},
+  {q:"Varför är det viktigt att äta regelbundet?",a:"Ger jämn energi, bättre koncentration och minskar risken att småäta onyttigt."},
+  {q:"Vilka tre delar består tallriksmodellen av?",a:"Kolhydrater, grönsaker/frukt och protein."},
+  {q:"Vad ger kolhydrater kroppen?",a:"Energi."},
+  {q:"Vad har protein för funktion i kroppen?",a:"Bygger upp och reparerar kroppen."},
+  {q:"Varför behöver vi fett?",a:"Ger energi, bygger celler, skyddar organ."},
+  {q:"Vad gör vitaminer och mineraler i kroppen?",a:"Stärker immunförsvaret, behövs för blod, skelett och andra funktioner."},
+  {q:"Vad gör fibrer?",a:"Bra för magen, håller blodsockret jämnt."},
+  {q:"Vad är skillnaden på mättat och omättat fett?",a:"Mättat fett (smör, bacon, ost) är mindre nyttigt, omättat fett (olja, avokado, fisk, nötter) är bra för hjärtat."},
+  {q:"Vad hjälper matcirkeln oss med?",a:"Att planera måltider och få i oss alla näringsämnen."},
+  {q:"Ge exempel på snabba kolhydrater.",a:"Vitt bröd, godis, läsk."},
+  {q:"Ge exempel på långsamma kolhydrater.",a:"Grovt bröd, fullkornspasta, baljväxter."},
+  {q:"Varför är det bättre att äta mer från växtriket än djurriket?",a:"Växtriket (bönor, linser) är nyttigt och klimatsmart, djurriket (kött, ost) har ofta mer mättat fett och större klimatpåverkan."},
+  {q:"Varför är det bra att äta närodlade och säsongsanpassade råvaror?",a:"Mindre transporter, bättre för miljön, billigare, färskare och godare."},
+  {q:"Nämn 5 klimatsmarta mattips.",a:"Ät mer vegetariskt, välj säsongsanpassat, välj närodlat, ta hand om rester, drick vatten istället för läsk."},
+  {q:"Vilka är bra måltidsvanor?",a:"Ät frukost, lunch, middag och mellanmål, drick vatten, ät varierat och lagom stora portioner, ha trevliga måltider."},
+  {q:"Varför är bra mat viktigt för hälsan?",a:"Ger energi, koncentration, ork och minskar risken för sjukdomar."}
+].map((x,i)=>({...x,id:"q"+(i+1)}));
+
+// ====== Multiuser hantering ======
+const USERS_KEY = "emma-srs-users"; // lista av profiler
+const STORAGE_PREFIX = "emma-srs-exam-"; // följt av profilen
+
+function getUsers(){
+  const v = localStorage.getItem(USERS_KEY);
+  if (!v) return [];
+  try { return JSON.parse(v); } catch { return []; }
+}
+function setUsers(list){
+  localStorage.setItem(USERS_KEY, JSON.stringify(list));
+}
+
+function ensureUser(name){
+  const users = new Set(getUsers());
+  if (!name) return;
+  users.add(name);
+  setUsers([...users]);
+}
+
+function storageKey(name){ return STORAGE_PREFIX + name; }
+
+// ====== Deck/Progress ======
+const now = () => Date.now();
+const dayMs = 24*60*60*1000;
+function defState(id){ return { id, reps:0, due:now(), lapses:0 }; }
+
+let currentUser = null;
+let deck = [];
+
+function loadDeck(name){
+  ensureUser(name);
+  const saved = localStorage.getItem(storageKey(name));
+  let d = QA.map(q => ({...q, state: defState(q.id)}));
+  if (saved){
+    try {
+      const p = JSON.parse(saved);
+      const map = new Map(p.map(x=>[x.id,x]));
+      d = d.map(b => map.get(b.id) || b);
+    } catch {}
+  }
+  deck = d;
+  currentUser = name;
+  saveDeck();
+  updateProfileUI();
+  render();
+}
+
+function saveDeck(){
+  if (!currentUser) return;
+  localStorage.setItem(storageKey(currentUser), JSON.stringify(deck));
+}
+
+function exportProgress(){
+  if (!currentUser) return alert("Ingen profil vald.");
+  const blob = new Blob([JSON.stringify(deck)], {type:"application/json"});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = currentUser + "-progress.json";
+  a.click();
+}
+
+document.getElementById('importFile').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if (!file || !currentUser) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!Array.isArray(data)) throw new Error("Fel format");
+      deck = QA.map(q => {
+        const found = data.find(x=>x.id===q.id);
+        return found ? found : ({...q, state: defState(q.id)});
+      });
+      saveDeck();
+      render();
+      alert("Import klar för " + currentUser);
+    } catch(err){
+      alert("Import misslyckades: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+// ====== SRS (exam-läge & normal) ======
+let examMode = true;
+document.getElementById('examToggle').onchange = (e)=>{ examMode = e.target.checked; render(); };
+
+function gradeCard(s,g,exam){
+  s={...s};
+  const m=(min)=>min*60000, h=(hr)=>hr*3600000;
+  if (exam){
+    if (g===1){ s.reps=0; s.lapses++; s.due=now()+m(10); return s; }
+    if (g===2){ s.reps++; s.due=now()+m(30); return s; }
+    if (g===3){ s.reps++; s.due=now()+[h(1),h(3),h(6)][Math.min(s.reps-1,2)]; return s; }
+    if (g===4){ s.reps++; s.due=now()+[h(2),h(6),h(12)][Math.min(s.reps-1,2)]; return s; }
+  } else {
+    if (g===1){ s.reps=0; s.lapses++; s.due=now()+m(30); return s; }
+    s.reps++; s.due=now()+dayMs*Math.max(1,s.reps); return s;
+  }
+  return s;
+}
+
+function pool(){ 
+  return deck.filter(d=>d.state.due<=now())
+             .concat(deck.filter(d=>d.state.reps===0).slice(0,10));
+}
+
+function stats(){
+  const poolNow=pool();
+  const pct = Math.round(100*(deck.length - poolNow.length)/deck.length);
+  document.getElementById('bar').style.width = pct + '%';
+  document.getElementById('stats').textContent =
+    `Profil: ${currentUser || "–"} · Klar nu: ${deck.length-poolNow.length}/${deck.length} · Förfallna: ${poolNow.length}`;
+}
+
+function renderEmpty(){
+  const el = document.getElementById('main');
+  el.innerHTML = '<div class="card"><div class="card-content center"><h3>Inga fler kort 🎉</h3><p class="muted">Bra jobbat!</p><div class="controls"><button class="btn" onclick="location.reload()">Uppdatera</button><button class="btn reset" onclick="resetAll()">🔄 Börja om (profil)</button></div></div></div>';
+}
+
+function render(){
+  stats();
+  if (!currentUser){ renderProfilePrompt(); return; }
+  const c = pool()[0];
+  const el = document.getElementById('main');
+  if (!c) return renderEmpty();
+  el.innerHTML = `<div class="card"><div class="card-content">
+    <div style="display:flex;justify-content:space-between">
+      <span class="badge">Förfaller: ${Math.max(0, Math.round((c.state.due - now())/60000))} min</span>
+      <span class="muted">Rep ${c.state.reps} · Lapses ${c.state.lapses}</span>
+    </div>
+    <div class="q" id="qa">${c.q}</div>
+    <div class="controls"><button class="btn outline" onclick="flip()">Vänd</button></div>
+    <div class="controls">
+      <button class="btn bad" onclick="grade(1)">1 Again</button>
+      <button class="btn outline" onclick="grade(2)">2 Hard</button>
+      <button class="btn" onclick="grade(3)">3 Good</button>
+      <button class="btn ok" onclick="grade(4)">4 Easy</button>
+    </div>
+  </div></div>`;
+  window._cid = c.id; window._showA=false;
+}
+
+function flip(){ const c = deck.find(x=>x.id===window._cid); if(!c) return;
+  const el = document.getElementById('qa'); 
+  if(window._showA){ el.textContent=c.q; window._showA=false; } else { el.textContent=c.a; window._showA=true; }
+}
+
+function grade(g){
+  const i = deck.findIndex(x=>x.id===window._cid);
+  if (i<0) return;
+  deck[i] = {...deck[i], state: gradeCard(deck[i].state, g, examMode)};
+  saveDeck(); render();
+}
+
+function resetAll(){
+  if (!currentUser) return alert("Välj först en profil.");
+  if (!confirm("Nollställ alla framsteg för " + currentUser + "?")) return;
+  deck = QA.map(q=>({...q, state: defState(q.id)}));
+  saveDeck(); render();
+}
+
+// ====== Profil UI ======
+function updateProfileUI(){
+  const sel = document.getElementById('profileSelect');
+  const users = getUsers();
+  sel.innerHTML = "";
+  if (users.length === 0){
+    const opt = document.createElement('option'); opt.value=""; opt.textContent="Ingen profil"; sel.appendChild(opt);
+  } else {
+    users.forEach(u => {
+      const opt = document.createElement('option'); opt.value=u; opt.textContent=u; sel.appendChild(opt);
+    });
+  }
+  if (currentUser){
+    sel.value = currentUser;
+  }
+}
+
+function addProfile(){
+  const inp = document.getElementById('newProfileName');
+  const name = (inp.value || "").trim();
+  if (!name) return alert("Skriv ett profilnamn (t.ex. Emma).");
+  ensureUser(name);
+  inp.value = "";
+  loadDeck(name);
+}
+
+document.getElementById('profileSelect').addEventListener('change', (e)=>{
+  const name = e.target.value;
+  if (!name) return;
+  loadDeck(name);
+});
+
+function renderProfilePrompt(){
+  const el = document.getElementById('main');
+  const users = getUsers();
+  el.innerHTML = `<div class="card"><div class="card-content">
+    <h3>Välj eller skapa en profil</h3>
+    <p class="muted">Varje barn får sin egen sparade progress på denna enhet.</p>
+    <div class="controls">
+      ${(users.length ? users.map(u=>`<button class='btn outline' onclick='loadDeck("${u}")'>${u}</button>`).join('') : "<span class='muted'>Inga profiler ännu.</span>")}
+    </div>
+  </div></div>`;
+}
+
+// keyboard
+window.onkeydown=(e)=>{
+  if (e.code==='Space'){ e.preventDefault(); flip(); }
+  if (e.key==='1') grade(1);
+  if (e.key==='2') grade(2);
+  if (e.key==='3') grade(3);
+  if (e.key==='4') grade(4);
+};
+
+// Init – försök välja första profil om någon finns
+const existing = getUsers();
+if (existing.length){ loadDeck(existing[0]); } else { updateProfileUI(); render(); }
+</script>
+</body>
+</html>
